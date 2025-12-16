@@ -22,5 +22,11 @@ async fn main() -> anyhow::Result<()> {
     
     println!("Successfully connected to DB.");
 
+    let office = domain::office::Office::new(1, "Silkeborg".to_string(), 1);
+    match office {
+        Ok(o) => println!("Created office: {:?}", o),
+        Err(e) => eprintln!("Failed to create office: {}", e),
+    }
+
     Ok(())
 }
