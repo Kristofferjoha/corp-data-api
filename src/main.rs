@@ -14,8 +14,11 @@ mod utils;
 
 use config::db_settings::Settings;
 use repository::office_repository::OfficeRepository;
+use repository::employee_repository::EmployeeRepository;
 use service::office_service::OfficeService;
-use controller::office_controller::create_router;
+use service::employee_service::EmployeeService;
+use controller::office_controller::create_router as create_office_router;
+use controller::employee_controller::create_router as create_employee_router;
 
 /// Initializes and runs the Corp Data API server.
 /// Initializes structured logging, loads environment configuration,
@@ -44,11 +47,13 @@ async fn main() -> anyhow::Result<()> {
     })?;
 
     // Initialize repository and service layers
-    let repo = OfficeRepository::new(pool);
-    let service = Arc::new(OfficeService::new(repo));
+    let office_repo = OfficeRepository::new(pool.clone());
+    let employee_repo = EmployeeRepository::new(pool.clone());
+    let office_service = Arc::new(OfficeService::new(office_repo.clone()));
+    let employee_service = Arc::new(EmployeeService::new(employee_repo, office_repo));
 
     // builds HTTP layer
-    let app = create_router(service);
+    let app = create_office_router(office_service).merge(create_employee_router(employee_service));
 
     // TCP listener binding to address and HTTP server startup
     let addr = "0.0.0.0:3000";

@@ -79,12 +79,12 @@ async fn update_office(
     Path(id): Path<i32>,
     Json(req): Json<CreateOfficeRequest>,
 ) -> impl IntoResponse {
-    tracing::info!("REST request to update office ID: {}", id);
+    tracing::info!("Received request to update office with id: {}", id);
     let office = Office::from_create_request(req);
 
     match service.update_office(id, &office).await {
         Ok(updated) => {
-            tracing::info!("Office ID: {} updated successfully", id);
+            tracing::info!("Sucessfully updated office with id: {}", id);
             (StatusCode::OK, Json(updated.to_response())).into_response()
         },
         Err(e) => {
@@ -98,18 +98,18 @@ async fn delete_office(
     State(service): State<Arc<OfficeService>>,
     Path(id): Path<i32>,
 ) -> impl IntoResponse {
-    tracing::info!("REST request to delete office ID: {}", id);
+    tracing::info!("Received request to delete office with id: {}", id);
     match service.remove_office(id).await {
         Ok(true) => {
-            tracing::info!("Office ID: {} deleted successfully", id);
+            tracing::info!("Successfully deleted office with id: {}", id);
             StatusCode::NO_CONTENT.into_response()
         },
         Ok(false) => {
-            tracing::warn!("Delete failed: Office ID {} not found", id);
+            tracing::warn!("Failed as office not found for office with id: {}", id);
             (StatusCode::NOT_FOUND, "Office not found").into_response()
         }
         Err(e) => {
-            tracing::error!("Error deleting office ID {}: {}", id, e);
+            tracing::error!("Error to delete ID {}: {}", id, e);
             (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
         }
     }
