@@ -1,0 +1,28 @@
+Generating the offices
+Invoke-RestMethod -Uri http://127.0.0.1:3000/offices -Method Post -ContentType "application/json" -Body '{
+  "name": "Silkeborg",
+  "max_occupancy": 2
+}'
+
+Invoke-RestMethod -Uri http://127.0.0.1:3000/offices -Method Post -ContentType "application/json" -Body '{
+  "name": "Aalborg",
+  "max_occupancy": 3
+}'
+
+Invoke-RestMethod -Uri http://127.0.0.1:3000/offices -Method Post -ContentType "application/json" -Body '{
+  "name": "Esbjerg",
+  "max_occupancy": 1
+}'
+
+
+Getting all offices
+Invoke-RestMethod -Uri http://127.0.0.1:3000/offices -Method Get
+
+Getting specific office
+Invoke-RestMethod -Uri http://127.0.0.1:3000/offices/1 -Method Get
+
+_________________________________________________________________________________
+SQL THINGIES
+
+
+SELECT * FROM offices;
