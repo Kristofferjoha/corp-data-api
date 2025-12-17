@@ -1,12 +1,22 @@
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 
+/// Database configuration
+/// Loads settings from environment variables and creates a connection pool.
+/// Expected environment variables:
+/// - POSTGRES_USER
+/// - POSTGRES_PASSWORD
+/// - POSTGRES_DB
+
+
 #[derive(Debug, Clone)]
 pub struct Settings {
     pub database_url: String,
 }
 
 impl Settings {
+    // Loads environment varaibles and formats DB URL
+    // Panics if any required lvalue variable is missing
     pub fn connect_from_env() -> anyhow::Result<Self> {
         tracing::info!("Loading database configuration...");
         
@@ -19,6 +29,7 @@ impl Settings {
         Ok(Self { database_url })
     }
 
+    // Creates a Postgres connection pool with a maxiumum of 5 connections using the DB url
     pub async fn create_pool(&self) -> anyhow::Result<PgPool> {
         tracing::info!("Creating Postgres connection pool"); 
 

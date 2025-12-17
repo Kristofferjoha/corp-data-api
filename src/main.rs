@@ -30,7 +30,7 @@ async fn main() -> anyhow::Result<()> {
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 
-    // Load application configuration from evironment
+    // Load application configuration from environment
     let settings = Settings::connect_from_env().map_err(|e| {
         tracing::error!("Failed to load settings: {}", e);
         e

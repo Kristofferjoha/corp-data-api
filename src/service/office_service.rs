@@ -14,6 +14,9 @@ impl OfficeService {
 
     pub async fn add_office(&self, office: &Office) -> anyhow::Result<Office> {
         tracing::info!("Attempting to add office_id with name: {}", office.name);
+
+        office.validate()?;
+        
         if office.max_occupancy <= 0 {
             return Err(anyhow!("Max occupancy must be greater than 0"));
         }
@@ -33,5 +36,25 @@ impl OfficeService {
     pub async fn list_all_offices(&self) -> anyhow::Result<Vec<Office>> {
         tracing::info!("Listing all offices");
         self.repo.get_all_offices().await
+    }
+
+    pub async fn update_office(&self, id: i32, office: &Office) -> anyhow::Result<Office> {
+        tracing::info!("Attempting to update office with id: {}", id);
+
+        office.validate()?;
+
+        if let Some(existing) = self.repo.get_office_by_name(&office.name).await? {
+            if existing.id != Some(id) {
+                return Err(anyhow::anyhow!("Name '{}' already taken", office.name));
+            }
+        }
+        
+        self.repo.update_office_by_id(id, office).await
+    }
+
+    pub async fn remove_office(&self, id: i32) -> anyhow::Result<bool> {
+        tracing::info!("Deleting office id: {}", id);
+        let rows = self.repo.delete_office(id).await?;
+        Ok(rows > 0)
     }
 }

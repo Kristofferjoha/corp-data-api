@@ -1,27 +1,29 @@
-Generating the offices
+entry : "docker exec -it postgres_db psql -U kristoffer -d corp_data"
+
+
+
+Generate offices
 Invoke-RestMethod -Uri http://127.0.0.1:3000/offices -Method Post -ContentType "application/json" -Body '{
   "name": "Silkeborg",
   "max_occupancy": 2
 }'
 
-Invoke-RestMethod -Uri http://127.0.0.1:3000/offices -Method Post -ContentType "application/json" -Body '{
-  "name": "Aalborg",
-  "max_occupancy": 3
-}'
-
-Invoke-RestMethod -Uri http://127.0.0.1:3000/offices -Method Post -ContentType "application/json" -Body '{
-  "name": "Esbjerg",
-  "max_occupancy": 1
-}'
-
-
-Getting all offices
+GET all offices
 Invoke-RestMethod -Uri http://127.0.0.1:3000/offices -Method Get
 
-Getting specific office
+GET specific office
 Invoke-RestMethod -Uri http://127.0.0.1:3000/offices/1 -Method Get
 
-_________________________________________________________________________________
+
+Update Office
+Invoke-RestMethod -Uri http://127.0.0.1:3000/offices/1 -Method Put -ContentType "application/json" -Body '{
+  "name": "Aalborg",
+  "max_occupancy": 20
+}'
+
+Delete Office
+Invoke-RestMethod -Uri http://127.0.0.1:3000/offices/1 -Method Delete
+___________________________________________________________
 SQL THINGIES
 
 
