@@ -1,8 +1,6 @@
 use crate::entity::office::Office;
 use sqlx::PgPool;
 
-/// Repository for managing Office entities in the database
-/// Provides methods to create, retrieve, and list offices.
 
 #[derive(Clone)]
 pub struct OfficeRepository {
