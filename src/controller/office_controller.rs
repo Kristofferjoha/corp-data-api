@@ -10,6 +10,15 @@ use crate::service::office_service::OfficeService;
 use crate::entity::office::Office;
 use crate::dto::office_dto::CreateOfficeRequest;
 
+/// Creates the office API router.
+///
+/// Routes:
+/// Create a new office: POST /offices
+/// Get office by ID: GET /offices/{id}
+/// List all offices: GET /offices
+/// Update office by ID: PUT /offices/{id}
+/// Delete office by ID: DELETE /offices/{id}
+
 pub fn create_router(service: Arc<OfficeService>) -> Router {
     Router::new()
         .route("/offices", post(create_office).get(list_all_offices))
@@ -17,6 +26,10 @@ pub fn create_router(service: Arc<OfficeService>) -> Router {
         .with_state(service)
 }
 
+/// Creates office
+/// Expects JSON body with office data
+/// Success returns 201 Created with office data
+/// Failure returns 400 Bad Request with error message
 async fn create_office(
     State(service): State<Arc<OfficeService>>,
     Json(req): Json<CreateOfficeRequest>,
@@ -36,6 +49,10 @@ async fn create_office(
     }
 }
 
+/// Retrieves office by ID
+/// Expects office ID as a path parameter
+/// Success returns 200 OK with office data
+/// Failure returns 404 Not Found or 500 Internal Server Error
 async fn get_office_by_id(
     State(service): State<Arc<OfficeService>>,
     Path(id): Path<i32>,
@@ -57,6 +74,10 @@ async fn get_office_by_id(
     }
 }
 
+/// Lists all offices
+/// No parameters required
+/// Success returns 200 OK with a list of offices
+/// Failure returns 500 Internal Server Error
 async fn list_all_offices(
     State(service): State<Arc<OfficeService>>,
 ) -> impl IntoResponse {
@@ -74,6 +95,10 @@ async fn list_all_offices(
     }
 }
 
+/// Updates office by ID
+/// Expects office ID as a path parameter and JSON body with updated data
+/// Success returns 200 OK with updated office data
+/// Failure returns 400 Bad Request or 500 Internal Server Error
 async fn update_office(
     State(service): State<Arc<OfficeService>>,
     Path(id): Path<i32>,
@@ -94,6 +119,10 @@ async fn update_office(
     }
 }
 
+/// Deletes office by ID
+/// Expects office ID as a path parameter
+/// Success returns 204 No Content
+/// Failure returns 404 Not Found or 500 Internal Server Error
 async fn delete_office(
     State(service): State<Arc<OfficeService>>,
     Path(id): Path<i32>,

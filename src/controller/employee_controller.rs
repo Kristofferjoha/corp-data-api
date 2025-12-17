@@ -10,7 +10,18 @@ use crate::service::employee_service::EmployeeService;
 use crate::entity::employee::Employee;
 use crate::dto::employee_dto::CreateEmployeeRequest;
 
+/// Creates the employee API router.
+///
+/// Routes:
+/// Create a new employee: POST /employees
+/// Get employee by ID: GET /employees/{id}
+/// List all employees: GET /employees
+/// List employees by office ID: GET /employees/office/{office_id}
+/// Update employee by ID: PUT /employees/{id}
+/// Delete employee by ID: DELETE /employees/{id}
+
 pub fn create_router(service: Arc<EmployeeService>) -> Router {
+
     Router::new()
         .route("/employees", post(create_employee).get(list_all_employees))
         .route("/employees/{id}", get(get_employee_by_id).delete(delete_employee).put(update_employee))
@@ -18,7 +29,10 @@ pub fn create_router(service: Arc<EmployeeService>) -> Router {
         .with_state(service)
 }
 
-// create employee C
+/// Creates employee
+/// Expects JSON body with employee data
+/// Success returns 201 Created with employee data
+/// Failure returns 400 Bad Request with error message
 async fn create_employee(
     State(service): State<Arc<EmployeeService>>,
     Json(req): Json<CreateEmployeeRequest>,
@@ -37,7 +51,11 @@ async fn create_employee(
         }
     }
 }
-// get employee by id R
+
+/// Retrieves employee by ID
+/// Expects employee ID as a path parameter
+/// Success returns 200 OK with employee data
+/// Failure returns 404 Not Found or 500 Internal Server Error
 async fn get_employee_by_id(
     State(service): State<Arc<EmployeeService>>,
     Path(id): Path<i32>,
@@ -58,7 +76,11 @@ async fn get_employee_by_id(
         }
     }
 }
-// get all employees R
+
+/// Lists all employees
+/// No parameters required
+/// Success returns 200 OK with a list of employees
+/// Failure returns 500 Internal Server Error
 async fn list_all_employees(
     State(service): State<Arc<EmployeeService>>,
 ) -> impl IntoResponse {
@@ -75,7 +97,11 @@ async fn list_all_employees(
         }
     }
 }
-// get all employees office R
+
+/// Lists employees by office ID
+/// Expects office ID as a path parameter
+/// Success returns 200 OK with a list of employees
+/// Failure returns 404 Not Found or 500 Internal Server Error
 async fn list_employees_by_office_id(
     State(service): State<Arc<EmployeeService>>,
     Path(office_id): Path<i32>,
@@ -100,8 +126,11 @@ async fn list_employees_by_office_id(
         }
     }
 }
-// update employee U
-// Validate -> lookup employee exists -> make sure new office exists -> chjeck if overfit -> boom update
+
+/// Updates employee by ID
+/// Expects employee ID as a path parameter and JSON body with updated data
+/// Success returns 200 OK with updated employee data
+/// Failure returns 400 Bad Request or 500 Internal Server Error
 async fn update_employee(
     State(service): State<Arc<EmployeeService>>,
     Path(id): Path<i32>,
@@ -122,7 +151,10 @@ async fn update_employee(
     }
 }
 
-// delete employee D
+/// Deletes employee by ID
+/// Expects employee ID as a path parameter
+/// Success returns 204 No Content
+/// Failure returns 404 Not Found or 500 Internal Server Error
 async fn delete_employee(
     State(service): State<Arc<EmployeeService>>,
     Path(id): Path<i32>,

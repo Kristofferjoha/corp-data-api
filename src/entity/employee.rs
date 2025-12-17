@@ -5,7 +5,7 @@ use crate::utils::Validate;
 use chrono::Datelike;
 
 /// Employee entity
-/// Represents an employee with an optional ID, first name, last name, birth date, and associated office ID.
+/// Represents an employee with an optional ID, first name, last name, birth date, and connected office ID.
 /// 
 /// database schema:
 /// id SERIAL PRIMARY KEY,
@@ -23,7 +23,7 @@ pub struct Employee {
     pub first_name: String, // any name but last name 
     pub last_name: String, // last name of the employee
     pub birth_date: chrono::NaiveDate, // birth date of the employee
-    pub office_id: i32, // foreign key to the office
+    pub office_id: i32, // foreign key to office
 }
 
 impl Employee {

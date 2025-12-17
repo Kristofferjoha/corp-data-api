@@ -1,16 +1,19 @@
 use crate::entity::office::Office;
 use sqlx::PgPool;
 
-
+/// Repository for Office entities in the database
+/// Handles database operations for offices
 #[derive(Clone)]
 pub struct OfficeRepository {
     pool: PgPool,
 }
 impl OfficeRepository {
+    /// Constructor for OfficeRepository
     pub fn new(pool: PgPool) -> Self {
         Self { pool }
     }
 
+    /// Inserts an office and returns the created office with its ID
     pub async fn create_office(&self, office: &Office) -> anyhow::Result<Office> {
         let created = sqlx::query_as!(
             Office,
@@ -23,6 +26,7 @@ impl OfficeRepository {
         Ok(created)
     }
 
+    /// Retrieves an office by its ID
     pub async fn get_office_by_id(&self, id: i32) -> anyhow::Result<Option<Office>> {
         let office = sqlx::query_as!(
             Office,
@@ -34,6 +38,7 @@ impl OfficeRepository {
         Ok(office)
     }
 
+    /// Retrieves all offices from the database
     pub async fn get_all_offices(&self) -> anyhow::Result<Vec<Office>> {
         let offices = sqlx::query_as!(
             Office,
@@ -43,6 +48,8 @@ impl OfficeRepository {
         .await?;
         Ok(offices)
     }
+
+    /// Retrieves an office by its name
     pub async fn get_office_by_name(&self, name: &str) -> anyhow::Result<Option<Office>> {
         let office = sqlx::query_as!(
             Office,
@@ -55,6 +62,7 @@ impl OfficeRepository {
         Ok(office)
     }
 
+    /// Updates an office by its ID and returns the updated office
     pub async fn update_office_by_id(&self, id: i32, office: &Office) -> anyhow::Result<Office> {
         let updated = sqlx::query_as!(
             Office,
@@ -68,6 +76,7 @@ impl OfficeRepository {
         Ok(updated)
     }
 
+    /// Deletes an office by its ID and returns the number of affected rows
     pub async fn delete_office(&self, id: i32) -> anyhow::Result<u64> {
         let result = sqlx::query!("DELETE FROM offices WHERE id = $1", id)
             .execute(&self.pool)

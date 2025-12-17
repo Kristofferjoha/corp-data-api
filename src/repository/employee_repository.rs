@@ -1,16 +1,20 @@
 use crate::entity::employee::Employee;
 use sqlx::PgPool;
 
+/// Repository for Employee entities in the database
+/// Handles database operations for employees
 
 #[derive(Clone)]
 pub struct EmployeeRepository {
     pool: PgPool,
 }
 impl EmployeeRepository {
+    /// Constructor for EmployeeRepository
     pub fn new(pool: PgPool) -> Self {
         Self { pool }
     }
 
+    /// Inserts employee and returns created employee with ID
     pub async fn create_employee(&self, employee: &Employee) -> anyhow::Result<Employee> {
         let created = sqlx::query_as!(
             Employee,
@@ -25,6 +29,7 @@ impl EmployeeRepository {
         Ok(created)
     }
 
+    /// Counts current number of employees in an office with given office_id
     pub async fn current_employee_nr_by_office_id(&self, office_id: i32) -> anyhow::Result<i64> {
         let count = sqlx::query_scalar!(
             "SELECT COUNT(*) FROM employees WHERE office_id = $1",
@@ -35,6 +40,7 @@ impl EmployeeRepository {
         Ok(count.unwrap_or(0))
     }
 
+    /// Retrieves employee by ID
     pub async fn get_employee_by_id(&self, id: i32) -> anyhow::Result<Option<Employee>> {
         let employee = sqlx::query_as!(
             Employee,
@@ -46,6 +52,7 @@ impl EmployeeRepository {
         Ok(employee)
     }
 
+    /// Retrieves employees by office ID
     pub async fn get_employees_by_office_id(&self, office_id: i32) -> anyhow::Result<Vec<Employee>> {
         let employees = sqlx::query_as!(
             Employee,
@@ -57,6 +64,7 @@ impl EmployeeRepository {
         Ok(employees)
     }
 
+    /// Retrieves all employees
     pub async fn get_all_employees(&self) -> anyhow::Result<Vec<Employee>> {
         let employees = sqlx::query_as!(
             Employee,
@@ -67,6 +75,7 @@ impl EmployeeRepository {
         Ok(employees)
     }
 
+    /// Updates employee by ID and returns updated employee
     pub async fn update_employee_by_id(&self, id: i32, employee: &Employee) -> anyhow::Result<Employee> {
         let updated = sqlx::query_as!(
             Employee,
@@ -82,6 +91,7 @@ impl EmployeeRepository {
         Ok(updated)
     }
 
+    /// Deletes employee by ID and returns number of affected rows
     pub async fn delete_employee(&self, id: i32) -> anyhow::Result<u64> {
         let result = sqlx::query!("DELETE FROM employees WHERE id = $1",id)
             .execute(&self.pool)

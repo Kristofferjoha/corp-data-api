@@ -1,5 +1,4 @@
-//! Entry point for the Corp Data API application.
-//! "$env:RUST_LOG="info,corp_data_api=debug,sqlx=info";" for logging
+// "$env:RUST_LOG="info,corp_data_api=debug,sqlx=info";" for logging
 use dotenv::dotenv;
 use std::sync::Arc;
 use tokio::net::TcpListener;
