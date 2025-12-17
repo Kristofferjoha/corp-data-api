@@ -18,7 +18,7 @@ impl Settings {
     // Loads environment varaibles and formats DB URL
     // Panics if any required lvalue variable is missing
     pub fn connect_from_env() -> anyhow::Result<Self> {
-        tracing::info!("Loading database configuration...");
+        tracing::info!("Loading database configuration: user, password, db");
         
         let user = std::env::var("POSTGRES_USER").expect("POSTGRES_USER must be set in env");
         let password = std::env::var("POSTGRES_PASSWORD").expect("POSTGRES_PASSWORD must be set in env");

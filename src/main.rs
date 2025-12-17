@@ -10,6 +10,7 @@ mod repository;
 mod service;
 mod controller;
 mod dto;
+mod utils;
 
 use config::db_settings::Settings;
 use repository::office_repository::OfficeRepository;

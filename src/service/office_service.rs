@@ -1,6 +1,7 @@
 use crate::entity::office::Office;
 use crate::repository::office_repository::OfficeRepository;
 use anyhow::{anyhow};
+use crate::utils::Validate;
 
 #[derive(Clone)]
 pub struct OfficeService {
@@ -15,8 +16,8 @@ impl OfficeService {
     pub async fn add_office(&self, office: &Office) -> anyhow::Result<Office> {
         tracing::info!("Attempting to add office_id with name: {}", office.name);
 
-        office.validate()?;
-        
+        office.validate().map_err(|e| anyhow::anyhow!(e))?;
+
         if office.max_occupancy <= 0 {
             return Err(anyhow!("Max occupancy must be greater than 0"));
         }
@@ -41,7 +42,7 @@ impl OfficeService {
     pub async fn update_office(&self, id: i32, office: &Office) -> anyhow::Result<Office> {
         tracing::info!("Attempting to update office with id: {}", id);
 
-        office.validate()?;
+        office.validate().map_err(|e| anyhow::anyhow!(e))?;
 
         if let Some(existing) = self.repo.get_office_by_name(&office.name).await? {
             if existing.id != Some(id) {

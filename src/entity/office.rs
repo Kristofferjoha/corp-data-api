@@ -1,6 +1,7 @@
 use serde::{Serialize, Deserialize};
 
 use crate::dto::office_dto::{CreateOfficeRequest, OfficeResponse};
+use crate::utils::Validate;
 
 /// Office entity 
 /// Represents an office with an optional ID, name, and maximum occupancy.
@@ -9,6 +10,8 @@ use crate::dto::office_dto::{CreateOfficeRequest, OfficeResponse};
 /// id SERIAL PRIMARY KEY,
 /// name TEXT NOT NULL UNIQUE,
 /// max_occupancy INT NOT NULL CHECK (max_occupancy > 0)
+/// 
+/// Includes validation for occupancy and name
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -35,15 +38,16 @@ impl Office {
             max_occupancy: self.max_occupancy,
         }
     }
+}
 
-    // validates the Office entity
-    // Used when updating or creating office
-    pub fn validate(&self) -> anyhow::Result<()> {
+// builds on validation trait to validate office data
+impl Validate for Office {
+    fn validate(&self) -> Result<(), String> {
         if self.max_occupancy <= 0 {
-            return Err(anyhow::anyhow!("Max occupancy must be greater than 0"));
+            return Err("Max occupancy must be greater than 0".to_string());
         }
         if self.name.trim().is_empty() {
-            return Err(anyhow::anyhow!("Name can not be empty"));
+            return Err("Office name cannot be empty".to_string());
         }
         Ok(())
     }
