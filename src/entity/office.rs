@@ -52,3 +52,59 @@ impl Validate for Office {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn create_valid_office() -> Office {
+        Office {
+            id: None,
+            name: "Aalborg".to_string(),
+            max_occupancy: 3,
+        }
+    }
+
+    #[test]
+    fn test_valid_office() {
+        let office = create_valid_office();
+        assert!(office.validate().is_ok());
+    }
+
+    #[test]
+    fn test_max_occupancy_zero() {
+        let mut office = create_valid_office();
+        office.max_occupancy = 0;
+        let result = office.validate();
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Max occupancy must be greater than 0");
+    }
+
+    #[test]
+    fn test_max_occupancy_negative() {
+        let mut office = create_valid_office();
+        office.max_occupancy = -5;
+        let result = office.validate();
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Max occupancy must be greater than 0");
+    }
+
+    #[test]
+    fn test_empty_name() {
+        let mut office = create_valid_office();
+        office.name = "".to_string();
+        let result = office.validate();
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Office name cannot be empty");
+    }
+
+    #[test]
+    fn test_whitespace_only_name() {
+        let mut office = create_valid_office();
+        office.name = "   ".to_string();
+        let result = office.validate();
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Office name cannot be empty");
+    }
+
+}

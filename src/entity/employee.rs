@@ -52,6 +52,12 @@ impl Employee {
 // builds on validation trait to validate employee data
 impl Validate for Employee {
     fn validate(&self) -> Result<(), String> {
+        if self.first_name.trim().is_empty() {
+            return Err("First name cannot be empty".into());
+        }
+        if self.last_name.trim().is_empty() {
+            return Err("Last name cannot be empty".into());
+        }
         if self.last_name.chars().any(|c| c.is_whitespace()) {
             return Err("Last name cannot contain whitespace".into());
         }
@@ -59,8 +65,74 @@ impl Validate for Employee {
             return Err("Born pre versaille treaty".into());
         }
         if self.birth_date.year() > 2007 {
-            return Err("born post rust".into());
+            return Err("Born post rust".into());
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::NaiveDate;
+
+    fn create_valid_employee() -> Employee {
+        Employee {
+            id: None,
+            first_name: "Kristoffer".to_string(),
+            last_name: "Doe".to_string(),
+            birth_date: NaiveDate::from_ymd_opt(1980, 1, 1).unwrap(),
+            office_id: 1,
+        }
+    }
+
+    #[test]
+    fn test_valid_employee() {
+        let employee = create_valid_employee();
+        assert!(employee.validate().is_ok());
+    }
+
+    #[test]
+    fn test_last_name_with_whitespace() {
+        let mut employee = create_valid_employee();
+        employee.last_name = "Lionel Messi".to_string();
+        let result = employee.validate();
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Last name cannot contain whitespace");
+    }
+
+    #[test]
+    fn test_born_before_1919() {
+        let mut employee = create_valid_employee();
+        employee.birth_date = NaiveDate::from_ymd_opt(1918, 1, 1).unwrap();
+        let result = employee.validate();
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Born pre versaille treaty");
+    }
+
+    #[test]
+    fn test_born_after_2007() {
+        let mut employee = create_valid_employee();
+        employee.birth_date = NaiveDate::from_ymd_opt(2008, 1, 1).unwrap();
+        let result = employee.validate();
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Born post rust");
+    }
+
+    #[test]
+    fn test_empty_last_name() {
+        let mut employee = create_valid_employee();
+        employee.last_name = "   ".to_string();
+        let result = employee.validate();
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "Last name cannot be empty");
+    }
+    #[test]
+    fn test_empty_first_name() {
+        let mut employee = create_valid_employee();
+        employee.first_name = "   ".to_string();
+        let result = employee.validate();
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err(), "First name cannot be empty");
     }
 }
