@@ -13,7 +13,7 @@ use crate::dto::employee_dto::CreateEmployeeRequest;
 pub fn create_router(service: Arc<EmployeeService>) -> Router {
     Router::new()
         .route("/employees", post(create_employee).get(list_all_employees))
-        .route("/employees/{id}", get(get_employee_by_id).delete(delete_employee))
+        .route("/employees/{id}", get(get_employee_by_id).delete(delete_employee).put(update_employee))
         .route("/employees/office/{office_id}", get(list_employees_by_office_id))
         .with_state(service)
 }
@@ -101,6 +101,26 @@ async fn list_employees_by_office_id(
     }
 }
 // update employee U
+// Validate -> lookup employee exists -> make sure new office exists -> chjeck if overfit -> boom update
+async fn update_employee(
+    State(service): State<Arc<EmployeeService>>,
+    Path(id): Path<i32>,
+    Json(req): Json<CreateEmployeeRequest>,
+) -> impl IntoResponse {
+    tracing::info!("Received request to update employee with id: {}", id);
+    let employee = Employee::from_create_request(req);
+
+    match service.update_employee(id, &employee).await {
+        Ok(updated) => {
+            tracing::info!("Successfully updated employee with id: {}", id);
+            (StatusCode::OK, Json(updated.to_response())).into_response()
+        },
+        Err(e) => {
+            tracing::warn!("Failed to update employee ID {}: {}", id, e);
+            (StatusCode::BAD_REQUEST, e.to_string()).into_response()
+        },
+    }
+}
 
 // delete employee D
 async fn delete_employee(

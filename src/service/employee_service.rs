@@ -22,13 +22,13 @@ impl EmployeeService {
 
         let office = self.office_repo.get_office_by_id(employee.office_id)
             .await?
-            .ok_or_else(|| anyhow!("Office ID {} does not exist", employee.office_id))?;
+            .ok_or_else(|| anyhow!("Office with ID {} does not exist", employee.office_id))?;
 
         let current_employee_nr = self.repo.current_employee_nr_by_office_id(employee.office_id).await?;
 
         if current_employee_nr >= office.max_occupancy as i64 {
             return Err(anyhow!(
-                "Office {} is at full capacity: {}/{}", 
+                "Office {} is at full capacity: {}/{} employees", 
                 office.name, 
                 office.max_occupancy,
                 office.max_occupancy
@@ -51,16 +51,34 @@ impl EmployeeService {
         tracing::info!("Listing employees for office id: {}", office_id);
 
         let office_id_exist = self.office_repo.get_office_by_id(office_id).await?;
-    
         if office_id_exist.is_none() {
             return Err(anyhow::anyhow!("Office with ID {} does not exist", office_id));
         }
 
-        let all_employees = self.repo.get_all_employees().await?;
-        let filtered: Vec<Employee> = all_employees.into_iter()
-            .filter(|e| e.office_id == office_id)
-            .collect();
-        Ok(filtered)
+        self.repo.get_employees_by_office_id(office_id).await
+    }
+
+    pub async fn update_employee(&self, id: i32, employee: &Employee) -> anyhow::Result<Employee> {
+        tracing::info!("Attempting to update employee with id: {}", id);
+
+        employee.validate().map_err(|e| anyhow::anyhow!(e))?;
+
+        let office = self.office_repo.get_office_by_id(employee.office_id)
+            .await?
+            .ok_or_else(|| anyhow!("Office with ID {} does not exist", employee.office_id))?;
+
+        let current_employee_nr = self.repo.current_employee_nr_by_office_id(employee.office_id).await?;
+
+        if current_employee_nr >= office.max_occupancy as i64 {
+            return Err(anyhow!(
+                "Office {} is at full capacity: {}/{} employees", 
+                office.name, 
+                office.max_occupancy,
+                office.max_occupancy
+            ));
+        }
+
+        self.repo.update_employee_by_id(id, employee).await
     }
 
     pub async fn remove_employee(&self, id: i32) -> anyhow::Result<bool> {

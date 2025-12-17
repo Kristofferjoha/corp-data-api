@@ -46,6 +46,17 @@ impl EmployeeRepository {
         Ok(employee)
     }
 
+    pub async fn get_employees_by_office_id(&self, office_id: i32) -> anyhow::Result<Vec<Employee>> {
+        let employees = sqlx::query_as!(
+            Employee,
+            "SELECT id, first_name, last_name, birth_date, office_id FROM employees WHERE office_id = $1",
+            office_id
+        )
+        .fetch_all(&self.pool)
+        .await?;
+        Ok(employees)
+    }
+
     pub async fn get_all_employees(&self) -> anyhow::Result<Vec<Employee>> {
         let employees = sqlx::query_as!(
             Employee,
@@ -54,6 +65,21 @@ impl EmployeeRepository {
         .fetch_all(&self.pool)
         .await?;
         Ok(employees)
+    }
+
+    pub async fn update_employee_by_id(&self, id: i32, employee: &Employee) -> anyhow::Result<Employee> {
+        let updated = sqlx::query_as!(
+            Employee,
+            "UPDATE employees SET first_name = $1, last_name = $2, birth_date = $3, office_id = $4 WHERE id = $5 RETURNING id, first_name, last_name, birth_date, office_id",
+            employee.first_name,
+            employee.last_name,
+            employee.birth_date,
+            employee.office_id,
+            id
+        )
+        .fetch_one(&self.pool)
+        .await?;
+        Ok(updated)
     }
 
     pub async fn delete_employee(&self, id: i32) -> anyhow::Result<u64> {
