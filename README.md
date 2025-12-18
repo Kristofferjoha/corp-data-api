@@ -33,6 +33,15 @@ Invoke-RestMethod -Uri http://127.0.0.1:3000/offices `
 
 ## Tests
 Indeholder grundlæggende tests alle lag:
+
+Lav .env.test som indeholder:
+```text
+POSTGRES_USER=test_user
+POSTGRES_PASSWORD=test_password
+POSTGRES_DB=test
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+```
 ```powershell
 cargo test
 ```
