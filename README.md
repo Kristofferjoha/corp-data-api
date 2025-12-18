@@ -1,4 +1,5 @@
-<img width="1343" height="455" alt="image" src="https://github.com/user-attachments/assets/5fa3111c-05d3-4570-8f7b-8cc65e7c77fb" />
+<img width="1370" height="444" alt="image" src="https://github.com/user-attachments/assets/8be6733a-0c60-45de-9bab-88b33396bc08" />
+
 
 ## Prereq
 Docker og Rust
