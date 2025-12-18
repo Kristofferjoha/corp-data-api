@@ -23,6 +23,19 @@ Invoke-RestMethod -Uri http://127.0.0.1:3000/offices/1 -Method Put -ContentType 
 
 Delete Office
 Invoke-RestMethod -Uri http://127.0.0.1:3000/offices/1 -Method Delete
+
+
+___________________________________________________________
+Invoke-RestMethod -Uri http://127.0.0.1:3000/employees -Method Post -ContentType "application/json" -Body '{
+  "first_name": "Anders",
+  "last_name": "Andersen",
+  "birth_date": "1995-05-15",
+  "office_id": 1
+}'
+
+
+
+
 ___________________________________________________________
 SQL THINGIES
 

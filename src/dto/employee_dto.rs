@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use chrono::NaiveDate;
 
-// Data Transfer Object for creating a new employee
+/// Data Transfer Object for creating a new employee
 #[derive(Debug, Deserialize)]
 pub struct CreateEmployeeRequest {
     pub first_name: String,
@@ -10,7 +10,7 @@ pub struct CreateEmployeeRequest {
     pub office_id: i32,
 }
 
-// Data Transfer Object for employee GET responses
+/// Data Transfer Object for employee GET responses
 #[derive(Debug, Serialize)]
 pub struct EmployeeResponse {
     pub id: Option<i32>,

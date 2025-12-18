@@ -15,6 +15,7 @@ use chrono::Datelike;
 /// office_id INT NOT NULL REFERENCES offices(id)
 /// 
 /// Includes validation for last name and vampire/baby status
+/// Includes validation tests
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

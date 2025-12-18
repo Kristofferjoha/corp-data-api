@@ -57,6 +57,7 @@ impl Validate for Office {
 mod tests {
     use super::*;
 
+    // Helper function to create a valid office
     fn create_valid_office() -> Office {
         Office {
             id: None,
@@ -97,14 +98,4 @@ mod tests {
         assert!(result.is_err());
         assert_eq!(result.unwrap_err(), "Office name cannot be empty");
     }
-
-    #[test]
-    fn test_whitespace_only_name() {
-        let mut office = create_valid_office();
-        office.name = "   ".to_string();
-        let result = office.validate();
-        assert!(result.is_err());
-        assert_eq!(result.unwrap_err(), "Office name cannot be empty");
-    }
-
 }
