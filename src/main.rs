@@ -2,6 +2,8 @@
 use dotenv::dotenv;
 use std::sync::Arc;
 use tokio::net::TcpListener;
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 
 mod config;
 mod entity;
@@ -17,7 +19,30 @@ use repository::employee_repository::EmployeeRepository;
 use service::office_service::OfficeService;
 use service::employee_service::EmployeeService;
 use controller::office_controller::create_router as create_office_router;
-use controller::employee_controller::create_router as create_employee_router;
+use controller::employee_controller::{create_router as create_employee_router};
+use dto::employee_dto::{EmployeeResponse, CreateEmployeeRequest};
+use dto::office_dto::{OfficeResponse, CreateOfficeRequest};
+
+
+/// OA specs for api
+#[derive(OpenApi)]
+#[openapi(
+    paths(
+        controller::employee_controller::get_employee_by_id,
+        controller::employee_controller::create_employee,
+        controller::employee_controller::list_all_employees,
+        controller::employee_controller::list_employees_by_office_id,
+        controller::employee_controller::update_employee,
+        controller::employee_controller::delete_employee,
+        controller::office_controller::create_office,
+        controller::office_controller::get_office_by_id,
+        controller::office_controller::list_all_offices,
+        controller::office_controller::update_office,
+        controller::office_controller::delete_office
+    ),
+    components(schemas(EmployeeResponse, CreateEmployeeRequest, OfficeResponse, CreateOfficeRequest))
+)]
+struct ApiDoc;
 
 /// Initializes and runs the Corp Data API server.
 /// Initializes structured logging, loads environment configuration,
@@ -52,7 +77,9 @@ async fn main() -> anyhow::Result<()> {
     let employee_service = Arc::new(EmployeeService::new(employee_repo, office_repo));
 
     // builds HTTP layer
-    let app = create_office_router(office_service).merge(create_employee_router(employee_service));
+    let app = create_office_router(office_service)
+        .merge(create_employee_router(employee_service))
+        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()));
 
     // TCP listener binding to address and HTTP server startup
     let addr = "0.0.0.0:3000";

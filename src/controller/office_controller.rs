@@ -8,7 +8,7 @@ use axum::{
 use std::sync::Arc;
 use crate::service::office_service::OfficeService;
 use crate::entity::office::Office;
-use crate::dto::office_dto::CreateOfficeRequest;
+use crate::dto::office_dto::{CreateOfficeRequest, OfficeResponse};
 
 /// Creates the office API router.
 ///
@@ -30,7 +30,16 @@ pub fn create_router(service: Arc<OfficeService>) -> Router {
 /// Expects JSON body with office data
 /// Success returns 201 Created with office data
 /// Failure returns 400 Bad Request with error message
-async fn create_office(
+#[utoipa::path(
+    post,
+    path = "/offices",
+    request_body = CreateOfficeRequest,
+    responses(
+        (status = 201, description = "Office created successfully", body = OfficeResponse),
+        (status = 400, description = "Bad request")
+    )
+)]
+pub async fn create_office(
     State(service): State<Arc<OfficeService>>,
     Json(req): Json<CreateOfficeRequest>,
 ) -> impl IntoResponse {
@@ -53,7 +62,19 @@ async fn create_office(
 /// Expects office ID as a path parameter
 /// Success returns 200 OK with office data
 /// Failure returns 404 Not Found or 500 Internal Server Error
-async fn get_office_by_id(
+#[utoipa::path(
+    get,
+    path = "/offices/{id}",
+    params(
+        ("id" = i32, Path, description = "Office ID")
+    ),
+    responses(
+        (status = 200, description = "Office found", body = OfficeResponse),
+        (status = 404, description = "Office not found"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn get_office_by_id(
     State(service): State<Arc<OfficeService>>,
     Path(id): Path<i32>,
 ) -> impl IntoResponse {
@@ -78,7 +99,15 @@ async fn get_office_by_id(
 /// No parameters required
 /// Success returns 200 OK with a list of offices
 /// Failure returns 500 Internal Server Error
-async fn list_all_offices(
+#[utoipa::path(
+    get,
+    path = "/offices",
+    responses(
+        (status = 200, description = "List of all offices", body = Vec<OfficeResponse>),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn list_all_offices(
     State(service): State<Arc<OfficeService>>,
 ) -> impl IntoResponse {
     tracing::info!("Received request to list all offices");
@@ -98,8 +127,20 @@ async fn list_all_offices(
 /// Updates office by ID
 /// Expects office ID as a path parameter and JSON body with updated data
 /// Success returns 200 OK with updated office data
-/// Failure returns 400 Bad Request or 500 Internal Server Error
-async fn update_office(
+/// Failure returns 400 Bad Request
+#[utoipa::path(
+    put,
+    path = "/offices/{id}",
+    params(
+        ("id" = i32, Path, description = "Office ID")
+    ),
+    request_body = CreateOfficeRequest,
+    responses(
+        (status = 200, description = "Office updated successfully", body = OfficeResponse),
+        (status = 400, description = "Bad request")
+    )
+)]
+pub async fn update_office(
     State(service): State<Arc<OfficeService>>,
     Path(id): Path<i32>,
     Json(req): Json<CreateOfficeRequest>,
@@ -123,7 +164,19 @@ async fn update_office(
 /// Expects office ID as a path parameter
 /// Success returns 204 No Content
 /// Failure returns 404 Not Found or 500 Internal Server Error
-async fn delete_office(
+#[utoipa::path(
+    delete,
+    path = "/offices/{id}",
+    params(
+        ("id" = i32, Path, description = "Office ID")
+    ),
+    responses(
+        (status = 204, description = "Office deleted successfully"),
+        (status = 404, description = "Office not found"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn delete_office(
     State(service): State<Arc<OfficeService>>,
     Path(id): Path<i32>,
 ) -> impl IntoResponse {

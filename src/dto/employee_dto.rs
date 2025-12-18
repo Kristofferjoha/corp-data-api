@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 use chrono::NaiveDate;
+use utoipa::ToSchema;
 
 /// Data Transfer Object for creating a new employee
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateEmployeeRequest {
     pub first_name: String,
     pub last_name: String,
@@ -11,7 +12,7 @@ pub struct CreateEmployeeRequest {
 }
 
 /// Data Transfer Object for employee GET responses
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct EmployeeResponse {
     pub id: Option<i32>,
     pub first_name: String,

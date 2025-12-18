@@ -1,6 +1,6 @@
 entry : "docker exec -it postgres_db psql -U kristoffer -d corp_data"
 
-
+http://localhost:3000/swagger-ui/
 
 Generate offices
 Invoke-RestMethod -Uri http://127.0.0.1:3000/offices -Method Post -ContentType "application/json" -Body '{

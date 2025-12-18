@@ -8,7 +8,7 @@ use axum::{
 use std::sync::Arc;
 use crate::service::employee_service::EmployeeService;
 use crate::entity::employee::Employee;
-use crate::dto::employee_dto::CreateEmployeeRequest;
+use crate::dto::employee_dto::{CreateEmployeeRequest, EmployeeResponse};
 
 /// Creates the employee API router.
 ///
@@ -33,7 +33,16 @@ pub fn create_router(service: Arc<EmployeeService>) -> Router {
 /// Expects JSON body with employee data
 /// Success returns 201 Created with employee data
 /// Failure returns 400 Bad Request with error message
-async fn create_employee(
+#[utoipa::path(
+    post,
+    path = "/employees",
+    request_body = CreateEmployeeRequest,
+    responses(
+        (status = 201, description = "Employee created successfully", body = EmployeeResponse),
+        (status = 400, description = "Bad request")
+    )
+)]
+pub async fn create_employee(
     State(service): State<Arc<EmployeeService>>,
     Json(req): Json<CreateEmployeeRequest>,
 ) -> impl IntoResponse {
@@ -56,7 +65,19 @@ async fn create_employee(
 /// Expects employee ID as a path parameter
 /// Success returns 200 OK with employee data
 /// Failure returns 404 Not Found or 500 Internal Server Error
-async fn get_employee_by_id(
+#[utoipa::path(
+    get,
+    path = "/employees/{id}",
+    params(
+        ("id" = i32, Path, description = "Employee ID")
+    ),
+    responses(
+        (status = 200, description = "Employee found", body = EmployeeResponse),
+        (status = 404, description = "Employee not found"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn get_employee_by_id(
     State(service): State<Arc<EmployeeService>>,
     Path(id): Path<i32>,
 ) -> impl IntoResponse {
@@ -81,7 +102,15 @@ async fn get_employee_by_id(
 /// No parameters required
 /// Success returns 200 OK with a list of employees
 /// Failure returns 500 Internal Server Error
-async fn list_all_employees(
+#[utoipa::path(
+    get,
+    path = "/employees",
+    responses(
+        (status = 200, description = "List of all employees", body = Vec<EmployeeResponse>),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn list_all_employees(
     State(service): State<Arc<EmployeeService>>,
 ) -> impl IntoResponse {
     tracing::info!("Received request to list all employees");
@@ -102,7 +131,19 @@ async fn list_all_employees(
 /// Expects office ID as a path parameter
 /// Success returns 200 OK with a list of employees
 /// Failure returns 404 Not Found or 500 Internal Server Error
-async fn list_employees_by_office_id(
+#[utoipa::path(
+    get,
+    path = "/employees/office/{office_id}",
+    params(
+        ("office_id" = i32, Path, description = "Office ID")
+    ),
+    responses(
+        (status = 200, description = "List of employees in office", body = Vec<EmployeeResponse>),
+        (status = 404, description = "Office not found"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn list_employees_by_office_id(
     State(service): State<Arc<EmployeeService>>,
     Path(office_id): Path<i32>,
 ) -> impl IntoResponse {
@@ -131,7 +172,19 @@ async fn list_employees_by_office_id(
 /// Expects employee ID as a path parameter and JSON body with updated data
 /// Success returns 200 OK with updated employee data
 /// Failure returns 400 Bad Request or 500 Internal Server Error
-async fn update_employee(
+#[utoipa::path(
+    put,
+    path = "/employees/{id}",
+    params(
+        ("id" = i32, Path, description = "Employee ID")
+    ),
+    request_body = CreateEmployeeRequest,
+    responses(
+        (status = 200, description = "Employee updated successfully", body = EmployeeResponse),
+        (status = 400, description = "Bad request")
+    )
+)]
+pub async fn update_employee(
     State(service): State<Arc<EmployeeService>>,
     Path(id): Path<i32>,
     Json(req): Json<CreateEmployeeRequest>,
@@ -155,7 +208,19 @@ async fn update_employee(
 /// Expects employee ID as a path parameter
 /// Success returns 204 No Content
 /// Failure returns 404 Not Found or 500 Internal Server Error
-async fn delete_employee(
+#[utoipa::path(
+    delete,
+    path = "/employees/{id}",
+    params(
+        ("id" = i32, Path, description = "Employee ID")
+    ),
+    responses(
+        (status = 204, description = "Employee deleted successfully"),
+        (status = 404, description = "Employee not found"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn delete_employee(
     State(service): State<Arc<EmployeeService>>,
     Path(id): Path<i32>,
 ) -> impl IntoResponse {
